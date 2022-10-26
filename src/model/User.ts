@@ -13,10 +13,10 @@ export interface IUserDocument extends IUser, Document {
   updatedAt: Date;
 }
 
-const UserSchema = new mongoose.Schema(
+const UserSchema = new mongoose.Schema<IUserDocument>(
   {
-    username: { Type: String, required: true, unique: true },
-    password: { Type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
     isAdmin: { type: Boolean, required: false, default: false },
   },
   { timestamps: true }
