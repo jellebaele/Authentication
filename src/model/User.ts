@@ -4,7 +4,7 @@ export interface IUser {
   username: string;
   password: string;
   // Could also be a row of ROLES (enum)
-  isAdmin: boolean;
+  isAdmin?: boolean;
 }
 
 export interface IUserDocument extends IUser, Document {
