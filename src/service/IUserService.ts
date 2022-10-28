@@ -1,4 +1,4 @@
-import { FilterQuery, ObjectId, QueryOptions } from 'mongoose';
+import { FilterQuery, QueryOptions } from 'mongoose';
 import { IUser, IUserDocument } from '../model/User';
 
 export interface IUserService {
