@@ -6,7 +6,6 @@ Actions:
 - Admin: get all users, update users, delete user
 
 [x] Create CRUD for user
-[ ] Authentication using jwt
+[ ] Authentication using jwt and redis
+[ ] Authentication using cookies and redis
 [ ] React app to register, login and get users
-[ ] Authentication using Redis
-[ ] Authentication JWT and Redis

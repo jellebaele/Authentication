@@ -48,6 +48,15 @@ export default class UserService implements IUserService {
     return this.omitPropertiesUser(user as IUserDocument);
   }
 
+  public async getUserByUsername(
+    username: string
+  ): Promise<IUserDocument | null> {
+    const user = await UserModel.findOne({ username: username }).lean();
+    if (!user) return null;
+
+    return this.omitPropertiesUser(user as IUserDocument);
+  }
+
   public async updateUserById(
     id: string,
     query: FilterQuery<IUserDocument>,
@@ -71,6 +80,16 @@ export default class UserService implements IUserService {
     const deletedUser = await UserModel.deleteOne({ _id: id });
 
     return !!deletedUser;
+  }
+
+  public async validatePassword(
+    plainTextPassword: string,
+    userId: string
+  ): Promise<boolean> {
+    const user = await this.getUserById(userId);
+    if (!user) return false;
+
+    return await bcrypt.compare(plainTextPassword, user.password);
   }
 
   private omitPropertiesUser(user: IUserDocument): IUserDocument | null {
