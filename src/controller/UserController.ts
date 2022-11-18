@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { IUserService } from '../service/IUserService';
+import UserService from '../service/UserService';
 
 class UserController {
-  userService: IUserService;
-  constructor(userService: IUserService) {
-    this.userService = userService;
+  userService: UserService;
+  constructor() {
+    this.userService = new UserService();
   }
 
   public async getAllUsersHandler(

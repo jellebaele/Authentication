@@ -1,9 +1,8 @@
 import { Request, Response, Router } from 'express';
 import UserController from '../../controller/UserController';
-import UserService from '../../service/implementations/UserService';
 
 const userRouter: Router = Router();
-const userController = new UserController(new UserService());
+const userController = new UserController();
 
 userRouter.get('/', (req: Request, res: Response) =>
   userController.getAllUsersHandler(req, res)
