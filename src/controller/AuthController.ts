@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import BadRequestError from '../error/implementations/BadRequestError';
 import UnauthorizedError from '../error/implementations/UnauthorizedError';
 import UserService from '../service/UserService';
+import TextUtils from '../utils/TextUtils';
 import { loginSchema, registerSchema, validateSchema } from './validation';
 
 class AuthController {
@@ -13,7 +14,8 @@ class AuthController {
 
   public async registerUserHandler(req: Request, res: Response) {
     await validateSchema(registerSchema, req.body);
-    const { username, password } = req.body;
+    const username = TextUtils.sanitize(req.body.username);
+    const password = req.body.password;
 
     const found = await this.userService.getUserByUsername(username);
     if (found) {
@@ -36,7 +38,7 @@ class AuthController {
 
     const user = await this.userService.getUserByUsername(username);
 
-    if (!user || (await this.userService.validatePassword(password, user.id))) {
+    if (!user || (await user.validatePassword(password))) {
       throw new UnauthorizedError('Invalid username or password');
     }
 
