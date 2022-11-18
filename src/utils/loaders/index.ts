@@ -1,7 +1,7 @@
 import setupExpress from './express';
 import { Express } from 'express';
 import dotenv from 'dotenv';
-import setupMongoose from './mongo';
+import setupMongoose from './database';
 
 const setupServer = (): Express | undefined => {
   try {

@@ -1,12 +1,9 @@
 import { FilterQuery, QueryOptions } from 'mongoose';
-import UserModel, { IUser, IUserDocument } from '../../model/User';
-import TextUtils from '../../utils/TextUtils';
-import { IUserService } from '../IUserService';
+import UserModel, { IUser, IUserDocument } from '../model/User';
+import TextUtils from '../utils/TextUtils';
 import * as bcrypt from 'bcrypt';
 
-export default class UserService implements IUserService {
-  // Clean and testable: import IUserRepo in constructor
-
+export default class UserService {
   public async createUser(user: IUser): Promise<IUserDocument | Error> {
     const { username, password } = user;
 

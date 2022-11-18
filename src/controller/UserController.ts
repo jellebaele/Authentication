@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
-import { IUserService } from '../service/IUserService';
+import UserService from '../service/UserService';
 
 class UserController {
-  userService: IUserService;
-  constructor(userService: IUserService) {
-    this.userService = userService;
+  userService: UserService;
+  constructor() {
+    this.userService = new UserService();
   }
 
   public async getAllUsersHandler(
@@ -35,23 +35,6 @@ class UserController {
       if (error instanceof Error)
         return res.status(400).send({ error: error.message });
       return res.status(400).send(error);
-    }
-  }
-
-  public async createUserHandler(
-    req: Request,
-    res: Response
-  ): Promise<Response> {
-    // Validation could be done using e.g. Zod
-    const { username, password } = req.body;
-    try {
-      const newUser = await this.userService.createUser({ username, password });
-
-      return res.status(201).send(newUser);
-    } catch (error: unknown) {
-      if (error instanceof Error)
-        return res.status(400).send({ error: error.message });
-      return res.status(400).send({ error });
     }
   }
 
