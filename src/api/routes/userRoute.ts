@@ -12,10 +12,6 @@ userRouter.get('/:userId', (req: Request, res: Response) => {
   userController.getUserByIdHandler(req, res);
 });
 
-userRouter.post('/', (req: Request, res: Response) =>
-  userController.createUserHandler(req, res)
-);
-
 userRouter.put('/:userId', (req: Request, res: Response) => {
   userController.updateUserByIdHandler(req, res);
 });
