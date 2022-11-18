@@ -54,16 +54,10 @@ export default class UserService {
       new: true,
     });
 
-    if (!updatedUser) throw new Error('User not found.');
-
     return this.omitPropertiesUser(updatedUser as IUserDocument);
   }
 
   public async deleteUserById(id: string): Promise<boolean> {
-    const userToDelete = await this.getUserById(id);
-
-    if (!userToDelete) throw new Error('User not found.');
-
     const deletedUser = await UserModel.deleteOne({ _id: id });
 
     return !!deletedUser;
