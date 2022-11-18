@@ -1,32 +1,22 @@
 import { FilterQuery, QueryOptions } from 'mongoose';
-import UserModel, { IUser, IUserDocument } from '../model/User';
-import TextUtils from '../utils/TextUtils';
-import * as bcrypt from 'bcrypt';
+import UserModel, { IUserDocument, IUserDto } from '../model/User';
+import InternalServerError from '../error/implementations/InternalServerError';
 
 export default class UserService {
-  public async createUser(user: IUser): Promise<IUserDocument | Error> {
-    const { username, password } = user;
-
-    if (!username || !password) {
-      throw new Error('Username and/or password is required');
-    }
-
-    const userDto: IUser = {
-      username: TextUtils.sanitize(user.username),
-      password: await this.hashPassword(user.password),
+  public async createUser(user: IUserDto): Promise<IUserDocument | Error> {
+    const userDto: IUserDto = {
+      username: user.username,
+      password: user.password,
       isAdmin: false,
     };
-
-    const userNameExists = await UserModel.findOne({ username: username });
-    if (userNameExists) {
-      throw new Error('Username is already taken, please choose another one.');
-    }
 
     const newUser = await new UserModel(userDto).save();
 
     const result = this.omitPropertiesUser(newUser.toObject());
     if (!result) {
-      throw new Error('Something went wrong. User is not created.');
+      throw new InternalServerError(
+        'Something went wrong. User is not created.'
+      );
     }
 
     return result;
@@ -79,16 +69,6 @@ export default class UserService {
     return !!deletedUser;
   }
 
-  public async validatePassword(
-    plainTextPassword: string,
-    userId: string
-  ): Promise<boolean> {
-    const user = await this.getUserById(userId);
-    if (!user) return false;
-
-    return await bcrypt.compare(plainTextPassword, user.password);
-  }
-
   private omitPropertiesUser(user: IUserDocument): IUserDocument | null {
     if (!user) return null;
     Reflect.deleteProperty(user, 'password');
@@ -108,10 +88,5 @@ export default class UserService {
     });
 
     return result;
-  }
-
-  private async hashPassword(password: string): Promise<string> {
-    const salt = await bcrypt.genSalt(10);
-    return bcrypt.hash(password, salt);
   }
 }
