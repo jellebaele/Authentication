@@ -44,6 +44,8 @@ class AuthController {
 
     // login user
     // authService.login(userid);
+
+    return res.status(200).json({ message: 'OK' });
   }
 }
 

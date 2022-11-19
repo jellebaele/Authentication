@@ -14,4 +14,12 @@ authRouter.post(
   })
 );
 
+authRouter.post(
+  '/login',
+  ensureLoggedOut,
+  asyncErrorHandler(async (req: Request, res: Response) => {
+    await authController.loginUserHandler(req, res);
+  })
+);
+
 export default authRouter;
