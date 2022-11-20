@@ -1,11 +1,26 @@
 # Authentication
+Basic full stack example app for cookie-based authentication. 
 
-Actions: 
-- Not logged in: Register, login
-- Logged in: Logout, get user info, update your account
-- Admin: get all users, update users, delete user
+Nodejs, express, Typescript, Redis, MongoDB, React, Redux, ...
 
-[x] Create CRUD for user
-[ ] Authentication using jwt and redis
-[ ] Authentication using cookies and redis
-[ ] React app to register, login and get users
+## Features
+- [ ] Register users
+- [ ] Login and logout
+- [ ] Session expiry
+- [ ] Email verification upon registration
+- [ ] Password reset
+- [ ] Lockout when too many failed login attempts
+- [ ] Rate limiting per user
+- [ ] Admin dashboard
+- [ ] Role based authorization
+- [ ] Get profile information
+- [ ] Admin: Lookup, edit and delete other profiles
+
+## Get started
+```console
+docker-compose up
+```
+
+```console
+npm run start:dev
+```

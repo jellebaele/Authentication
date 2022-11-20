@@ -105,3 +105,5 @@ dist
 
 # ts build folder
 build
+
+data/
