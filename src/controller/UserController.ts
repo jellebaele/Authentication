@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import NotFoundError from '../error/implementations/NotFoundError';
+import UnauthorizedError from '../error/implementations/UnauthorizedError';
 import UserService from '../service/UserService';
 
 class UserController {
@@ -14,6 +15,18 @@ class UserController {
   ): Promise<Response> {
     const users = await this.userService.getAllUsers();
     return res.send(users);
+  }
+
+  public async getCurrentUserHandler(
+    req: Request,
+    res: Response
+  ): Promise<Response> {
+    const userId = req.session?.userId;
+    if (!userId) {
+      throw new UnauthorizedError();
+    }
+    const user = await this.userService.getUserById(userId);
+    return res.send(user);
   }
 
   public async getUserByIdHandler(

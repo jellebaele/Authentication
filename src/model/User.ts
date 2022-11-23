@@ -12,7 +12,7 @@ export interface IUserDocument extends Document {
   username: string;
   password: string;
   // Could also be a row of ROLES (enum)
-  isAdmin?: boolean;
+  isAdmin: boolean;
   matchesPassword: (password: string) => Promise<boolean>;
 }
 

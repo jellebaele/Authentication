@@ -27,7 +27,8 @@ export default class UserService {
     return users;
   }
 
-  public async getUserById(id: string): Promise<IUserDocument | null> {
+  public async getUserById(id: string | number): Promise<IUserDocument | null> {
+    if (!id) return null;
     const user = await UserModel.findById(id);
     if (!user) return null;
 

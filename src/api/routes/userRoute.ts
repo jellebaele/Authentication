@@ -1,9 +1,8 @@
 import { Request, Response, Router } from 'express';
 import UserController from '../../controller/UserController';
-import { Roles } from '../../utils/enums/roles';
 import {
   asyncErrorHandler,
-  ensureAuthorized,
+  ensureIsAdmin,
   ensureLoggedIn,
 } from '../middleware';
 
@@ -15,13 +14,13 @@ userRouter.get(
   ensureLoggedIn,
   asyncErrorHandler(
     async (req: Request, res: Response) =>
-      await userController.getAllUsersHandler(req, res)
+      await userController.getCurrentUserHandler(req, res)
   )
 );
 
 userRouter.get(
   '/',
-  ensureAuthorized(Roles.Admin),
+  ensureIsAdmin,
   asyncErrorHandler(
     async (req: Request, res: Response) =>
       await userController.getAllUsersHandler(req, res)
@@ -30,7 +29,7 @@ userRouter.get(
 
 userRouter.get(
   '/:userId',
-  ensureAuthorized(Roles.Admin),
+  ensureIsAdmin,
   asyncErrorHandler(async (req: Request, res: Response) => {
     await userController.getUserByIdHandler(req, res);
   })
@@ -38,7 +37,7 @@ userRouter.get(
 
 userRouter.put(
   '/:userId',
-  ensureAuthorized(Roles.Admin),
+  ensureIsAdmin,
   asyncErrorHandler(async (req: Request, res: Response) => {
     await userController.updateUserByIdHandler(req, res);
   })
@@ -46,7 +45,7 @@ userRouter.put(
 
 userRouter.delete(
   '/:userId',
-  ensureAuthorized(Roles.Admin),
+  ensureIsAdmin,
   asyncErrorHandler(async (req: Request, res: Response) => {
     await userController.deleteUserByIdHandler(req, res);
   })
