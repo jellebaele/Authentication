@@ -18,7 +18,6 @@ export const internalErrorHandler = (
 export const asyncErrorHandler =
   (handler: RequestHandler) =>
   (...args: [Request, Response, NextFunction]) => {
-    console.log('here');
     const next: NextFunction = args[2];
 
     return Promise.resolve(handler(...args)).catch(next);

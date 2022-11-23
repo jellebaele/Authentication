@@ -1,14 +1,6 @@
-import mongoose, { Document } from 'mongoose';
+import { Document, model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { BCRYPT_WORK_FACTOR } from '../config';
-
-export interface IUser {
-  username: string;
-  password: string;
-  // Could also be a row of ROLES (enum)
-  isAdmin?: boolean;
-  validatePassword: (password: string) => Promise<boolean>;
-}
 
 export interface IUserDto {
   username: string;
@@ -16,12 +8,15 @@ export interface IUserDto {
   isAdmin?: boolean;
 }
 
-export interface IUserDocument extends IUser, Document {
-  createdAt: Date;
-  updatedAt: Date;
+export interface IUserDocument extends Document {
+  username: string;
+  password: string;
+  // Could also be a row of ROLES (enum)
+  isAdmin?: boolean;
+  matchesPassword: (password: string) => Promise<boolean>;
 }
 
-const UserSchema = new mongoose.Schema<IUserDocument>(
+const UserSchema = new Schema<IUserDocument>(
   {
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -36,10 +31,20 @@ UserSchema.pre('save', async function () {
   }
 });
 
-UserSchema.methods.validatePassword = async function (password: string) {
-  return await bcrypt.compare(password, this.password);
+UserSchema.methods.matchesPassword = function (password: string) {
+  return bcrypt.compare(password, this.password);
 };
 
-const UserModel = mongoose.model<IUserDocument>('User', UserSchema);
+UserSchema.set('toJSON', {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  transform: (doc, { __v, password, ...rest }, options) => rest,
+});
+
+UserSchema.set('toObject', {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  transform: (doc, { __v, password, ...rest }, options) => rest,
+});
+
+const UserModel = model<IUserDocument>('User', UserSchema);
 
 export default UserModel;
