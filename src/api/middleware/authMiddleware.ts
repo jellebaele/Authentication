@@ -32,9 +32,9 @@ export const ensureIsAdmin = async (
   res: Response,
   next: NextFunction
 ) => {
-  if (authService.isLoggedIn(req) || !(await authService.isAuthorized(req))) {
-    return next(new UnauthorizedError());
-  }
+  const isAuthorized = await authService.isAuthorized(req);
+
+  if (!isAuthorized) return next(new UnauthorizedError());
 
   next();
 };
