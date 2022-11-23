@@ -5,12 +5,14 @@ import helmet from 'helmet';
 import compression from 'compression';
 import v1Router from '../../api/routes/v1';
 import { internalErrorHandler } from '../../api/middleware';
+import session, { Store } from 'express-session';
+import { SESSION_OPTIONS } from '../../config';
 
 const origin = {
   origin: '*',
 };
 
-const setupExpress = (): Express => {
+const setupExpress = (store: Store): Express => {
   const app = express();
 
   app.use(express.json());
@@ -18,6 +20,13 @@ const setupExpress = (): Express => {
   app.use(compression());
   app.use(cors(origin));
   app.use(helmet());
+
+  app.use(
+    session({
+      store,
+      ...SESSION_OPTIONS,
+    })
+  );
 
   app.use(v1Router);
   app.use(internalErrorHandler);
