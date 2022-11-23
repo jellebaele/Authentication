@@ -11,6 +11,7 @@ export default class AuthService {
 
   login = (req: Request, userId: string) => {
     req.session.userId = userId;
+    req.session.createdAt = Date.now();
   };
 
   logout = (req: Request, res: Response): Promise<Error | void> => {

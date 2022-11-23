@@ -10,6 +10,10 @@ export const {
   SESSION_IDLE_TIMEOUT = HALF_HOUR,
 } = process.env;
 
+export const SESSION_ABSOLUTE_TIMEOUT = +(
+  process.env.SESSION_ABSOLUTE_TIMEOUT || ONE_HOUR
+);
+
 export const SESSION_OPTIONS: SessionOptions = {
   secret: SESSION_SECRET,
   name: SESSION_NAME,

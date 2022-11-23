@@ -4,7 +4,11 @@ import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
 import v1Router from '../../api/routes/v1';
-import { internalErrorHandler } from '../../api/middleware';
+import {
+  asyncErrorHandler,
+  checkTimeLoggedIn,
+  internalErrorHandler,
+} from '../../api/middleware';
 import session, { Store } from 'express-session';
 import { SESSION_OPTIONS } from '../../config';
 
@@ -28,6 +32,7 @@ const setupExpress = (store: Store): Express => {
     })
   );
 
+  app.use(asyncErrorHandler(checkTimeLoggedIn));
   app.use(v1Router);
   app.use(internalErrorHandler);
 
