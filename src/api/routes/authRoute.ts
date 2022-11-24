@@ -1,7 +1,7 @@
 import { Request, Response, Router } from 'express';
 import AuthController from '../../controller/AuthController';
 import { asyncErrorHandler } from '../middleware';
-import { ensureLoggedOut } from '../middleware/authMiddleware';
+import { ensureLoggedIn, ensureLoggedOut } from '../middleware/authMiddleware';
 
 const authRouter: Router = Router();
 const authController = new AuthController();
@@ -19,6 +19,14 @@ authRouter.post(
   ensureLoggedOut,
   asyncErrorHandler(async (req: Request, res: Response) => {
     await authController.loginUserHandler(req, res);
+  })
+);
+
+authRouter.post(
+  '/logout',
+  ensureLoggedIn,
+  asyncErrorHandler(async (req: Request, res: Response) => {
+    await authController.logoutUserHandler(req, res);
   })
 );
 

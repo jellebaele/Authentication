@@ -3,7 +3,7 @@ import UserModel, { IUserDocument, IUserDto } from '../model/User';
 import InternalServerError from '../error/implementations/InternalServerError';
 
 export default class UserService {
-  public async createUser(user: IUserDto): Promise<IUserDocument | Error> {
+  public async createUser(user: IUserDto): Promise<IUserDocument> {
     const userDto: IUserDto = {
       username: user.username,
       password: user.password,
@@ -12,36 +12,35 @@ export default class UserService {
 
     const newUser = await new UserModel(userDto).save();
 
-    const result = this.omitPropertiesUser(newUser.toObject());
-    if (!result) {
+    if (!newUser) {
       throw new InternalServerError(
         'Something went wrong. User is not created.'
       );
     }
 
-    return result;
+    return newUser;
   }
 
   public async getAllUsers(limit = 100): Promise<(IUserDocument | null)[]> {
-    const users = await UserModel.find().limit(limit).lean();
+    const users = await UserModel.find().limit(limit);
 
-    return this.omitPropertiesUsers(users as IUserDocument[]);
+    return users;
   }
 
-  public async getUserById(id: string): Promise<IUserDocument | null> {
-    const user = await UserModel.findById(id).lean();
+  public async getUserById(id: string | number): Promise<IUserDocument | null> {
+    if (!id) return null;
+    const user = await UserModel.findById(id);
     if (!user) return null;
 
-    return this.omitPropertiesUser(user as IUserDocument);
+    return user;
   }
 
-  public async getUserByUsername(
-    username: string
-  ): Promise<IUserDocument | null> {
-    const user = await UserModel.findOne({ username: username }).lean();
+  public async getUserByUsername(username: string) {
+    const user = await UserModel.findOne({ username: username });
+
     if (!user) return null;
 
-    return this.omitPropertiesUser(user as IUserDocument);
+    return user;
   }
 
   public async updateUserById(
@@ -54,33 +53,12 @@ export default class UserService {
       new: true,
     });
 
-    return this.omitPropertiesUser(updatedUser as IUserDocument);
+    return updatedUser;
   }
 
   public async deleteUserById(id: string): Promise<boolean> {
     const deletedUser = await UserModel.deleteOne({ _id: id });
 
     return !!deletedUser;
-  }
-
-  private omitPropertiesUser(user: IUserDocument): IUserDocument | null {
-    if (!user) return null;
-    Reflect.deleteProperty(user, 'password');
-
-    return user as IUserDocument;
-  }
-
-  private omitPropertiesUsers(
-    users: IUserDocument[]
-  ): (IUserDocument | null)[] {
-    if (!users) {
-      return [];
-    }
-
-    const result = users.map((user) => {
-      return this.omitPropertiesUser(user);
-    });
-
-    return result;
   }
 }

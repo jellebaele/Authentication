@@ -4,9 +4,9 @@ Basic full stack example app for cookie-based authentication.
 Nodejs, express, Typescript, Redis, MongoDB, React, Redux, ...
 
 ## Features
-- [ ] Register users
-- [ ] Login and logout
-- [ ] Session expiry
+- [x] Register users
+- [x] Login and logout
+- [x] Session expiry
 - [ ] Email verification upon registration
 - [ ] Password reset
 - [ ] Lockout when too many failed login attempts

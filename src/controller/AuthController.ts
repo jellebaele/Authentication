@@ -1,15 +1,18 @@
 import { Request, Response } from 'express';
 import BadRequestError from '../error/implementations/BadRequestError';
 import UnauthorizedError from '../error/implementations/UnauthorizedError';
+import AuthService from '../service/AuthService';
 import UserService from '../service/UserService';
 import TextUtils from '../utils/TextUtils';
 import { loginSchema, registerSchema, validateSchema } from './validation';
 
 class AuthController {
   userService: UserService;
+  authService: AuthService;
 
   constructor() {
     this.userService = new UserService();
+    this.authService = new AuthService();
   }
 
   public async registerUserHandler(req: Request, res: Response) {
@@ -22,12 +25,12 @@ class AuthController {
       throw new BadRequestError('Invalid username');
     }
 
-    await this.userService.createUser({
+    const newUser = await this.userService.createUser({
       username,
       password,
     });
 
-    // Login user
+    this.authService.login(req, newUser.id);
 
     return res.status(201).json({ message: 'OK' });
   }
@@ -38,14 +41,19 @@ class AuthController {
 
     const user = await this.userService.getUserByUsername(username);
 
-    if (!user || (await user.validatePassword(password))) {
+    if (!user || !(await user.matchesPassword(password))) {
       throw new UnauthorizedError('Invalid username or password');
     }
 
-    // login user
-    // authService.login(userid);
+    this.authService.login(req, user._id);
 
     return res.status(200).json({ message: 'OK' });
+  }
+
+  public async logoutUserHandler(req: Request, res: Response) {
+    await this.authService.logout(req, res);
+
+    res.json({ message: 'OK' });
   }
 }
 
