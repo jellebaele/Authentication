@@ -1,5 +1,6 @@
 import Joi from 'joi';
 
+const email = Joi.string().email().lowercase().trim().required();
 const username = Joi.string().min(3).max(128).trim().required();
 const password = Joi.string()
   .min(8)
@@ -12,6 +13,7 @@ const password = Joi.string()
 const passwordConfirmation = Joi.valid(Joi.ref('password')).required();
 
 export const registerSchema = Joi.object({
+  email,
   username,
   password,
   passwordConfirmation,

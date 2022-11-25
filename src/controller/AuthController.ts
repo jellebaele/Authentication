@@ -18,15 +18,20 @@ class AuthController {
   public async registerUserHandler(req: Request, res: Response) {
     await validateSchema(registerSchema, req.body);
     const username = TextUtils.sanitize(req.body.username);
+    const email = TextUtils.sanitize(req.body.email);
     const password = req.body.password;
 
-    const found = await this.userService.getUserByUsername(username);
+    const found = await this.userService.getUserByMailOrUsername(
+      username,
+      email
+    );
     if (found) {
-      throw new BadRequestError('Invalid username');
+      throw new BadRequestError('Invalid username or email');
     }
 
     const newUser = await this.userService.createUser({
       username,
+      email,
       password,
     });
 

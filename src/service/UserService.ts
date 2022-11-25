@@ -6,6 +6,7 @@ export default class UserService {
   public async createUser(user: IUserDto): Promise<IUserDocument> {
     const userDto: IUserDto = {
       username: user.username,
+      email: user.email,
       password: user.password,
       isAdmin: false,
     };
@@ -32,6 +33,13 @@ export default class UserService {
     const user = await UserModel.findById(id);
     if (!user) return null;
 
+    return user;
+  }
+
+  public async getUserByMailOrUsername(username: string, email: string) {
+    const user = await UserModel.findOne({ $or: [{ username }, { email }] });
+
+    if (!user) return null;
     return user;
   }
 

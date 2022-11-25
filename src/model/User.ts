@@ -1,26 +1,42 @@
 import { Document, model, Schema } from 'mongoose';
 import bcrypt from 'bcrypt';
 import { BCRYPT_WORK_FACTOR } from '../config';
+import { UserStatus } from '../utils/enums';
 
 export interface IUserDto {
+  email: string;
   username: string;
   password: string;
   isAdmin?: boolean;
 }
 
 export interface IUserDocument extends Document {
+  email: string;
   username: string;
   password: string;
   // Could also be a row of ROLES (enum)
   isAdmin: boolean;
+  status?: UserStatus;
+  confirmationCode?: string;
   matchesPassword: (password: string) => Promise<boolean>;
 }
 
 const UserSchema = new Schema<IUserDocument>(
   {
+    email: { type: String, required: true, unique: true },
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
     isAdmin: { type: Boolean, required: false, default: false },
+    status: {
+      type: String,
+      enum: UserStatus,
+      default: UserStatus.Pending,
+    },
+    confirmationCode: {
+      type: String,
+      required: false,
+      unique: true,
+    },
   },
   { timestamps: true }
 );
