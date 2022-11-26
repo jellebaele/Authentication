@@ -3,6 +3,7 @@ import BadRequestError from '../error/implementations/BadRequestError';
 import UnauthorizedError from '../error/implementations/UnauthorizedError';
 import AuthService from '../service/AuthService';
 import UserService from '../service/UserService';
+import { UserStatus } from '../utils/enums';
 import TextUtils from '../utils/TextUtils';
 import { loginSchema, registerSchema, validateSchema } from './validation';
 
@@ -25,17 +26,16 @@ class AuthController {
       username,
       email
     );
+
     if (found) {
       throw new BadRequestError('Invalid username or email');
     }
 
-    const newUser = await this.userService.createUser({
+    await this.authService.register({
       username,
       email,
       password,
     });
-
-    this.authService.login(req, newUser.id);
 
     return res.status(201).json({ message: 'OK' });
   }
@@ -50,6 +50,10 @@ class AuthController {
       throw new UnauthorizedError('Invalid username or password');
     }
 
+    if (!this.authService.isUserActive(user)) {
+      throw new UnauthorizedError('Invalid account. Please verify your email');
+    }
+
     this.authService.login(req, user._id);
 
     return res.status(200).json({ message: 'OK' });
@@ -57,6 +61,28 @@ class AuthController {
 
   public async logoutUserHandler(req: Request, res: Response) {
     await this.authService.logout(req, res);
+
+    res.json({ message: 'OK' });
+  }
+
+  public async confirmRegistrationHandler(req: Request, res: Response) {
+    const { confirmationCode } = req.params;
+
+    if (!confirmationCode) return new BadRequestError();
+
+    const user = await this.userService.getUserByConfirmationCode(
+      confirmationCode
+    );
+
+    if (!user) throw new UnauthorizedError();
+    if (this.authService.isUserActive(user)) {
+      throw new BadRequestError('Already active');
+    }
+
+    const valid = this.authService.verifyConfirmationCode(confirmationCode);
+    if (!valid) throw new UnauthorizedError();
+
+    this.userService.updateUserById(user.id, { status: UserStatus.Active });
 
     res.json({ message: 'OK' });
   }

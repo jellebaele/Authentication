@@ -30,4 +30,12 @@ authRouter.post(
   })
 );
 
+authRouter.post(
+  '/confirm-registration/:confirmationCode',
+  ensureLoggedOut,
+  asyncErrorHandler(async (req: Request, res: Response) => {
+    await authController.confirmRegistrationHandler(req, res);
+  })
+);
+
 export default authRouter;

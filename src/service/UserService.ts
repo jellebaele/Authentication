@@ -9,6 +9,7 @@ export default class UserService {
       email: user.email,
       password: user.password,
       isAdmin: false,
+      confirmationCode: user.confirmationCode,
     };
 
     const newUser = await new UserModel(userDto).save();
@@ -51,10 +52,18 @@ export default class UserService {
     return user;
   }
 
+  public async getUserByConfirmationCode(confirmationCode: string) {
+    const user = await UserModel.findOne({ confirmationCode });
+
+    if (!user) return null;
+
+    return user;
+  }
+
   public async updateUserById(
     id: string,
     query: FilterQuery<IUserDocument>,
-    options: QueryOptions<unknown>
+    options: QueryOptions<unknown> = { lean: true }
   ): Promise<IUserDocument | null> {
     const updatedUser = await UserModel.findByIdAndUpdate({ _id: id }, query, {
       ...options,

@@ -8,6 +8,8 @@ export interface IUserDto {
   username: string;
   password: string;
   isAdmin?: boolean;
+  confirmationCode?: string;
+  status?: UserStatus;
 }
 
 export interface IUserDocument extends Document {
@@ -35,7 +37,6 @@ const UserSchema = new Schema<IUserDocument>(
     confirmationCode: {
       type: String,
       required: false,
-      unique: true,
     },
   },
   { timestamps: true }
