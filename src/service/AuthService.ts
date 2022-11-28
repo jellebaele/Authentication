@@ -1,23 +1,15 @@
 import { Request, Response } from 'express';
-import {
-  JWT_EXPIRATION,
-  JWT_SECRET,
-  mailTransporter,
-  SESSION_NAME,
-} from '../config';
+import { JWT_EXPIRATION, JWT_SECRET, SESSION_NAME } from '../config';
 import { IUserDto } from '../model/User';
 import UserService from './UserService';
 import jwt from 'jsonwebtoken';
-import MailService from './MailService';
 import { UserStatus } from '../utils/enums';
 
 export default class AuthService {
   userService;
-  mailService;
 
   constructor() {
     this.userService = new UserService();
-    this.mailService = new MailService(mailTransporter);
   }
 
   register = async (user: IUserDto) => {
@@ -32,13 +24,6 @@ export default class AuthService {
     const newUser = await this.userService.createUser({
       ...user,
       confirmationCode: token,
-    });
-
-    this.mailService.sendMail({
-      sourceAdress: 'authExample@test.com',
-      destinationAdress: newUser.email,
-      subject: 'Email confirmation',
-      body: this.mailService.createBody(newUser),
     });
 
     return newUser;

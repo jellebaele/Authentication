@@ -1,19 +1,24 @@
 import { Request, Response } from 'express';
+import { mailTransporter } from '../config';
 import BadRequestError from '../error/implementations/BadRequestError';
 import UnauthorizedError from '../error/implementations/UnauthorizedError';
 import AuthService from '../service/AuthService';
+import MailService from '../service/MailService';
 import UserService from '../service/UserService';
 import { UserStatus } from '../utils/enums';
+import { createBodyConfirmRegistration } from '../utils/mail/userRegistration';
 import TextUtils from '../utils/TextUtils';
 import { loginSchema, registerSchema, validateSchema } from './validation';
 
 class AuthController {
   userService: UserService;
   authService: AuthService;
+  mailService: MailService;
 
   constructor() {
     this.userService = new UserService();
     this.authService = new AuthService();
+    this.mailService = new MailService(mailTransporter);
   }
 
   public async registerUserHandler(req: Request, res: Response) {
@@ -31,10 +36,17 @@ class AuthController {
       throw new BadRequestError('Invalid username or email');
     }
 
-    await this.authService.register({
+    const newUser = await this.authService.register({
       username,
       email,
       password,
+    });
+
+    this.mailService.sendMail({
+      sourceAdress: 'authExample@test.com',
+      destinationAdress: newUser.email,
+      subject: 'Email confirmation',
+      body: createBodyConfirmRegistration(newUser),
     });
 
     return res.status(201).json({ message: 'OK' });
